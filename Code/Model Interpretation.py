@@ -11,7 +11,6 @@ import os
 import copy
 import numpy as np
 np.random.seed(seed=0)
-
 model_name = "MLP"
 
 def permut_tech(iterations = 500, train = False):
