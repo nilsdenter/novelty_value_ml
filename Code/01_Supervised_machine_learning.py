@@ -22,16 +22,11 @@ def generate_statistics(classifier, algorithm, model_pred_train, model_pred_test
     statistics["TPR test"].append(round(recall_score(y_test, model_pred_test, pos_label=1),4))
     statistics["NPR test"].append(round(precision_score(y_test, model_pred_test, pos_label=0),4))
     statistics["TNR test"].append(round(recall_score(y_test, model_pred_test, pos_label=0),4))
-    #statistics["F1 score on test data"].append(round(f1_score(y_test, model_pred_test),4))
-    #statistics["MCC on test data"].append(round(matthews_corrcoef(y_test, model_pred_test),4))
-    #statistics["Balanced accuracy on train data"].append(round(balanced_accuracy_score(y_train, model_pred_train),4))
     statistics["ROC AUC train"].append(round(roc_auc_score(y_train, model_pred_train),4))
     statistics["PPV train"].append(round(precision_score(y_train, model_pred_train, pos_label=1),4))
     statistics["TPR train"].append(round(recall_score(y_train, model_pred_train, pos_label=1),4))
     statistics["NPR train"].append(round(precision_score(y_train, model_pred_train, pos_label=0),4))
     statistics["TNR train"].append(round(recall_score(y_train, model_pred_train, pos_label=0),4))
-    #statistics["F1 score on train data"].append(round(f1_score(y_train, model_pred_train),4))
-    #statistics["MCC on train data"].append(round(matthews_corrcoef(y_train, model_pred_train),4))
     model_confusion_matrix = confusion_matrix(y_test, model_pred_test, labels = [1,0])
     model_confusion_matrix = pd.DataFrame(model_confusion_matrix, index= ["Actual True", "Actual False"], columns = ["Predicted True", "Predicted False"])
     model_confusion_matrix.to_excel("%s_confusion_matrix_test.xlsx" %algorithm)
@@ -48,7 +43,6 @@ def generate_statistics(classifier, algorithm, model_pred_train, model_pred_test
         print("\nBest Score by grid search:")
         print(classifier.best_score_)
         statistics["Parameter setting"].append(str(classifier.best_estimator_))
-        #pd.DataFrame(classifier.cv_results_).to_excel("%s_parameters.xlsx" %method, index=False)
     except:
         print("Dummy!")
         statistics["Parameter setting"].append("Dummy")
@@ -87,7 +81,6 @@ def DecisionTree(cv=10):
     pred_test = trained_model.predict(X_test)
     pred_train = trained_model.predict(X_train)
     print("\nAnalytics DecisionTreeClassifier at {0}".format(datetime.now().strftime("%d-%m-%Y %H:%M:%S")))
-    #dtc_fpr, dtc_tpr, dtc_threshold = analytics(dtc_pred, dtc)
     generate_statistics(classifier=trained_model,  algorithm = "Decision Tree", model_pred_train=pred_train, model_pred_test=pred_test)
 
 
