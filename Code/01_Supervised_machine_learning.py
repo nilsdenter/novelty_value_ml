@@ -58,12 +58,6 @@ def DecisionTree(cv=10):
             'model__min_samples_leaf': np.unique( np.exp(np.linspace(0, 8, 100)).astype(int)),
             'model__min_impurity_decrease': np.exp(np.linspace(-9, -1, 100))}
     
-    grid = {'model__criterion': ['entropy'],
-            'model__max_depth': [i for i in range(1,15)],
-            'model__min_samples_leaf': np.unique( np.exp(np.linspace(0, 8, 8)).astype(int)),
-            'model__min_impurity_decrease': np.exp(np.linspace(-9, -1, 8)),
-            'model__max_features': ['auto']}
-    
     model = DecisionTreeClassifier(random_state = 0)
     
     pipe = Pipeline([("scale", StandardScaler()), ("model", model)])
@@ -158,7 +152,7 @@ TOP 10 PERCENT OF CITATIONS 7 YEARS
 data_citations = pd.read_csv("Input_data_scaled_citations.csv", sep=",", decimal=".", index_col=0, header=0)
 print("Data loaded")
 number_columns = len(data_citations.columns)
-number_iv = 19
+number_iv = 27
 columns_iv = [i for i in range(number_columns-number_iv, number_columns)]
 X = data_citations.iloc[:,columns_iv].values
 y = data_citations["TOP10_CIT_7YEARS"].values
