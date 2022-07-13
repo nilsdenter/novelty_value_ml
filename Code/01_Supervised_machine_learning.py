@@ -58,12 +58,6 @@ def DecisionTree(cv=10):
             'model__min_samples_leaf': np.unique( np.exp(np.linspace(0, 8, 100)).astype(int)),
             'model__min_impurity_decrease': np.exp(np.linspace(-9, -1, 100))}
     
-    grid = {'model__criterion': ['entropy'],
-            'model__max_depth': [10],
-            'model__min_samples_leaf': np.unique( np.exp(np.linspace(0, 8, 20)).astype(int)),
-            'model__min_impurity_decrease': np.exp(np.linspace(-9, -1, 20)),
-            'model__max_features': ['auto']}
-    
     model = DecisionTreeClassifier(random_state = 0)
     
     pipe = Pipeline([("scale", StandardScaler()), ("model", model)])
@@ -88,7 +82,7 @@ def RandomForest(cv=10):
     from sklearn.ensemble import RandomForestClassifier
     print("\nStarted fitting RandomForest at {0}".format(datetime.now().strftime("%d-%m-%Y %H:%M:%S")))
     
-    grid = {"model__criterion" : ["entropy"],
+    grid = {"model__criterion" : ["entropy", "gini"],
     "model__n_estimators": [10,20,30,50],
     'model__max_depth': [10],
     'model__max_features': ['auto'],
@@ -118,10 +112,11 @@ def MultiLayerPerceptron(cv=10):
     print("\nStarted fitting MultiLayerPerceptron at {0}".format(datetime.now().strftime("%d-%m-%Y %H:%M:%S")))
     
     grid = {'model__solver': ["adam"],
-            'model__max_iter': [500],
-            'model__activation': ['relu'],
-            'model__alpha': [0.01, 0.02, 0.05, 0.001, 0.002, 0.005],
-            'model__hidden_layer_sizes': [(10,),(20,),(30,),(40,),(50,),(60,),(10,10),(20,20),(30,30),(40,40),(50,50),(60,60)]}
+            'model__max_iter': [1000],
+            'model__activation': ['relu', 'logistic', 'identity', 'tanh'],
+            'model__alpha': [1/i for i in range(1,101)],
+            'model__hidden_layer_sizes': [(100,), (100,100,100,100,100), (50,), (50,50), (30,30), (60,60), 
+                                          (30,20,10), (20,20), (25,15), (10,40,10), (20,20,20), (30,10), (10,10,10)]}
     
     model = MLPClassifier(random_state = 0)
     pipe = Pipeline([("scale", StandardScaler()), ("model", model)])
@@ -153,212 +148,49 @@ def Dummy():
 
 number_iv = 27
 
-# =============================================================================
-# """
-# TOP 10 PERCENT OF CITATIONS 7 YEARS
-# """
-# os.chdir(r"N:\Publikationen\2021 Assessment Novelty measures\Submission to journal\Revision 1\Applicant characteristics")
-# del statistics
-# statistics = defaultdict(list)
-# data_citations = pd.read_csv("Input_data_scaled_citations_further_controls.csv", sep=",", decimal=".", index_col=0, header=0)
-# print("Data loaded")
-# number_columns = len(data_citations.columns)
-# 
-# columns_iv = [i for i in range(number_columns-number_iv, number_columns)]
-# X = data_citations.iloc[:,columns_iv].values
-# y = data_citations["TOP10_CIT_7YEARS"].values
-# X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 0, stratify = y)
-# print("\nCases to train {0}".format(len(y_train)))
-# print("\nCases to test {0}".format(len(y_test)))
-# del data_citations
-# cv_generator = StratifiedKFold(n_splits=5)
-# os.chdir(r"N:\Publikationen\2021 Assessment Novelty measures\Submission to journal\Revision 1\Applicant characteristics\citations_7_years_top_10")
-# Dummy()
-# DecisionTree(cv=cv_generator)
-# RandomForest(cv=cv_generator)
-# MultiLayerPerceptron(cv=cv_generator) 
-# df2 = pd.DataFrame(data = statistics)
-# df2 = df2.sort_values(by=["ROC AUC mean validation"], ascending=False)
-# df2.to_excel("classification_statistics_TOP10_CIT_7YEARS_applicant_controls.xlsx", index=False)
-# =============================================================================
-
-# =============================================================================
-# """
-# TOP 10 PERCENT OF KPSS_REAL
-# """
-# os.chdir(r"N:\Publikationen\2021 Assessment Novelty measures\Submission to journal\Revision 1\Applicant characteristics")
-# del statistics
-# statistics = defaultdict(list)
-# data_kpss = pd.read_csv("Input_data_scaled_KPSS_further_controls.csv", sep=",", decimal=".", index_col=0, header=0)
-# print("Data loaded")
-# X = data_kpss.iloc[:,columns_iv].values
-# y = data_kpss["TOP10_KPSS"].values
-# X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 0, stratify = y)
-# print("\nCases to train {0}".format(len(y_train)))
-# print("\nCases to test {0}".format(len(y_test)))
-# del data_kpss
-# os.chdir(r"N:\Publikationen\2021 Assessment Novelty measures\Submission to journal\Revision 1\Applicant characteristics\kpss_top_10")
-# Dummy()
-# DecisionTree(cv=cv_generator)
-# RandomForest(cv=cv_generator)
-# MultiLayerPerceptron(cv=cv_generator)
-#             
-# df2 = pd.DataFrame(data = statistics)
-# df2 = df2.sort_values(by=["ROC AUC mean validation"], ascending=False)
-# df2.to_excel("classification_statistics_TOP10_KPSS_applicant_controls.xlsx", index=False)
-# =============================================================================
-
-
 """
-TOP 10 PERCENT OF CITATIONS 5 YEARS
+TOP 10 PERCENT OF CITATIONS 7 YEARS
 """
-os.chdir(r"N:\Publikationen\2021 Assessment Novelty measures\Submission to journal\Revision 1\Applicant characteristics")
+
 del statistics
 statistics = defaultdict(list)
-data_citations = pd.read_csv("Input_data_scaled_citations_further_controls.csv", sep=",", decimal=".", index_col=0, header=0)
+data_citations = pd.read_csv("Input_data_scaled_citations.csv", sep=",", decimal=".", index_col=0, header=0)
 print("Data loaded")
 number_columns = len(data_citations.columns)
 
 columns_iv = [i for i in range(number_columns-number_iv, number_columns)]
 X = data_citations.iloc[:,columns_iv].values
-y = data_citations["TOP10_CIT_5YEARS"].values
+y = data_citations["TOP10_CIT_7YEARS"].values
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 0, stratify = y)
 print("\nCases to train {0}".format(len(y_train)))
 print("\nCases to test {0}".format(len(y_test)))
 del data_citations
 cv_generator = StratifiedKFold(n_splits=5)
-os.chdir(r"N:\Publikationen\2021 Assessment Novelty measures\Submission to journal\Revision 1\Applicant characteristics\citations_5_years_top_10")
+
 Dummy()
 DecisionTree(cv=cv_generator)
 RandomForest(cv=cv_generator)
 MultiLayerPerceptron(cv=cv_generator) 
 df2 = pd.DataFrame(data = statistics)
 df2 = df2.sort_values(by=["ROC AUC mean validation"], ascending=False)
-df2.to_excel("classification_statistics_TOP10_CIT_5YEARS_applicant_controls.xlsx", index=False)
+df2.to_excel("classification_statistics_TOP10_CIT_7YEARS.xlsx", index=False)
+
 
 """
-TOP 10 PERCENT OF CITATIONS 10 YEARS
+TOP 10 PERCENT OF KPSS_REAL
 """
-os.chdir(r"N:\Publikationen\2021 Assessment Novelty measures\Submission to journal\Revision 1\Applicant characteristics")
+
 del statistics
 statistics = defaultdict(list)
-data_citations = pd.read_csv("Input_data_scaled_citations_further_controls.csv", sep=",", decimal=".", index_col=0, header=0)
-print("Data loaded")
-number_columns = len(data_citations.columns)
-
-columns_iv = [i for i in range(number_columns-number_iv, number_columns)]
-X = data_citations.iloc[:,columns_iv].values
-y = data_citations["TOP10_CIT_10YEARS"].values
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 0, stratify = y)
-print("\nCases to train {0}".format(len(y_train)))
-print("\nCases to test {0}".format(len(y_test)))
-del data_citations
-cv_generator = StratifiedKFold(n_splits=5)
-os.chdir(r"N:\Publikationen\2021 Assessment Novelty measures\Submission to journal\Revision 1\Applicant characteristics\citations_10_years_top_10")
-Dummy()
-DecisionTree(cv=cv_generator)
-RandomForest(cv=cv_generator)
-MultiLayerPerceptron(cv=cv_generator) 
-df2 = pd.DataFrame(data = statistics)
-df2 = df2.sort_values(by=["ROC AUC mean validation"], ascending=False)
-df2.to_excel("classification_statistics_TOP10_CIT_10YEARS_applicant_controls.xlsx", index=False)
-
-"""
-TOP 1 PERCENT OF CITATIONS 5 YEARS
-"""
-os.chdir(r"N:\Publikationen\2021 Assessment Novelty measures\Submission to journal\Revision 1\Applicant characteristics")
-del statistics
-statistics = defaultdict(list)
-data_citations = pd.read_csv("Input_data_scaled_citations_further_controls.csv", sep=",", decimal=".", index_col=0, header=0)
-print("Data loaded")
-number_columns = len(data_citations.columns)
-
-columns_iv = [i for i in range(number_columns-number_iv, number_columns)]
-X = data_citations.iloc[:,columns_iv].values
-y = data_citations["TOP1_CIT_5YEARS"].values
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 0, stratify = y)
-print("\nCases to train {0}".format(len(y_train)))
-print("\nCases to test {0}".format(len(y_test)))
-del data_citations
-cv_generator = StratifiedKFold(n_splits=5)
-os.chdir(r"N:\Publikationen\2021 Assessment Novelty measures\Submission to journal\Revision 1\Applicant characteristics\citations_5_years_top_1")
-Dummy()
-DecisionTree(cv=cv_generator)
-RandomForest(cv=cv_generator)
-MultiLayerPerceptron(cv=cv_generator) 
-df2 = pd.DataFrame(data = statistics)
-df2 = df2.sort_values(by=["ROC AUC mean validation"], ascending=False)
-df2.to_excel("classification_statistics_TOP1_CIT_5YEARS_applicant_controls.xlsx", index=False)
-
-"""
-TOP 1 PERCENT OF CITATIONS 7 YEARS
-"""
-os.chdir(r"N:\Publikationen\2021 Assessment Novelty measures\Submission to journal\Revision 1\Applicant characteristics")
-del statistics
-statistics = defaultdict(list)
-data_citations = pd.read_csv("Input_data_scaled_citations_further_controls.csv", sep=",", decimal=".", index_col=0, header=0)
-print("Data loaded")
-number_columns = len(data_citations.columns)
-
-columns_iv = [i for i in range(number_columns-number_iv, number_columns)]
-X = data_citations.iloc[:,columns_iv].values
-y = data_citations["TOP1_CIT_7YEARS"].values
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 0, stratify = y)
-print("\nCases to train {0}".format(len(y_train)))
-print("\nCases to test {0}".format(len(y_test)))
-del data_citations
-cv_generator = StratifiedKFold(n_splits=5)
-os.chdir(r"N:\Publikationen\2021 Assessment Novelty measures\Submission to journal\Revision 1\Applicant characteristics\citations_7_years_top_1")
-Dummy()
-DecisionTree(cv=cv_generator)
-RandomForest(cv=cv_generator)
-MultiLayerPerceptron(cv=cv_generator) 
-df2 = pd.DataFrame(data = statistics)
-df2 = df2.sort_values(by=["ROC AUC mean validation"], ascending=False)
-df2.to_excel("classification_statistics_TOP1_CIT_7YEARS_applicant_controls.xlsx", index=False)
-
-"""
-TOP 1 PERCENT OF CITATIONS 10 YEARS
-"""
-os.chdir(r"N:\Publikationen\2021 Assessment Novelty measures\Submission to journal\Revision 1\Applicant characteristics")
-del statistics
-statistics = defaultdict(list)
-data_citations = pd.read_csv("Input_data_scaled_citations_further_controls.csv", sep=",", decimal=".", index_col=0, header=0)
-print("Data loaded")
-number_columns = len(data_citations.columns)
-
-columns_iv = [i for i in range(number_columns-number_iv, number_columns)]
-X = data_citations.iloc[:,columns_iv].values
-y = data_citations["TOP1_CIT_10YEARS"].values
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 0, stratify = y)
-print("\nCases to train {0}".format(len(y_train)))
-print("\nCases to test {0}".format(len(y_test)))
-del data_citations
-cv_generator = StratifiedKFold(n_splits=5)
-os.chdir(r"N:\Publikationen\2021 Assessment Novelty measures\Submission to journal\Revision 1\Applicant characteristics\citations_10_years_top_1")
-Dummy()
-DecisionTree(cv=cv_generator)
-RandomForest(cv=cv_generator)
-MultiLayerPerceptron(cv=cv_generator) 
-df2 = pd.DataFrame(data = statistics)
-df2 = df2.sort_values(by=["ROC AUC mean validation"], ascending=False)
-df2.to_excel("classification_statistics_TOP1_CIT_10YEARS_applicant_controls.xlsx", index=False)
-
-"""
-TOP 1 PERCENT OF KPSS_REAL
-"""
-os.chdir(r"N:\Publikationen\2021 Assessment Novelty measures\Submission to journal\Revision 1\Applicant characteristics")
-del statistics
-statistics = defaultdict(list)
-data_kpss = pd.read_csv("Input_data_scaled_KPSS_further_controls.csv", sep=",", decimal=".", index_col=0, header=0)
+data_kpss = pd.read_csv("Input_data_scaled_KPSS.csv", sep=",", decimal=".", index_col=0, header=0)
 print("Data loaded")
 X = data_kpss.iloc[:,columns_iv].values
-y = data_kpss["TOP1_KPSS"].values
+y = data_kpss["TOP10_KPSS"].values
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 0, stratify = y)
 print("\nCases to train {0}".format(len(y_train)))
 print("\nCases to test {0}".format(len(y_test)))
 del data_kpss
-os.chdir(r"N:\Publikationen\2021 Assessment Novelty measures\Submission to journal\Revision 1\Applicant characteristics\kpss_top_1")
+
 Dummy()
 DecisionTree(cv=cv_generator)
 RandomForest(cv=cv_generator)
@@ -366,4 +198,4 @@ MultiLayerPerceptron(cv=cv_generator)
             
 df2 = pd.DataFrame(data = statistics)
 df2 = df2.sort_values(by=["ROC AUC mean validation"], ascending=False)
-df2.to_excel("classification_statistics_TOP1_KPSS_applicant_controls.xlsx", index=False)
+df2.to_excel("classification_statistics_TOP10_KPSS.xlsx", index=False)
